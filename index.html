@@ -108,12 +108,16 @@ h1{
   text-shadow:none;
 }
 .cta:focus-visible,.copy-btn:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.phone-list{
+  display:grid;
+  gap:8px;
+  margin-top:14px;
+}
 .phone-line{
   display:flex;
   align-items:center;
   flex-wrap:wrap;
   gap:10px;
-  margin-top:14px;
   color:#fff;
   font-size:15px;
   font-weight:750;
@@ -435,14 +439,23 @@ body.lightbox-open{overflow:hidden}
       <h1>The room with the sunsets.</h1>
       <p class="hero-lede">14th floor, fully furnished, two easy flatmates. Ready to move in.</p>
       <a class="cta" href="https://wa.me/919818432194" target="_blank" rel="noopener" id="cta">Talk to us <span aria-hidden="true">→</span></a>
-      <div class="phone-line">
-        <span>Text first:</span>
-        <span class="phone-number" id="phoneNumber">9818432194</span>
-        <button class="copy-btn" id="copyBtn" type="button" aria-label="Copy phone number">
-          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          <span id="copyLabel">Copy</span>
-        </button>
+      <div class="phone-list" aria-label="Phone numbers">
+        <div class="phone-line">
+          <span class="phone-number">9717545007 (Dhruv)</span>
+          <button class="copy-btn" type="button" data-copy-number="9717545007" aria-label="Copy Dhruv's phone number">
+            <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            <span class="copy-label">Copy</span>
+          </button>
+        </div>
+        <div class="phone-line">
+          <span class="phone-number">9818432194 (Satvik)</span>
+          <button class="copy-btn" type="button" data-copy-number="9818432194" aria-label="Copy Satvik's phone number">
+            <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            <span class="copy-label">Copy</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -460,7 +473,7 @@ body.lightbox-open{overflow:hidden}
 
         <section class="story-block">
           <h3>🏠House:</h3>
-          <p>3 BHK, 14th Floor, Spacious max, <strong>Sunlit AF</strong>, great view, big tv (movie nightss!!!),<br><br>Plus we have an amazing <strong>cook </strong>(meals 3 times a day), a <strong>cleaning maid </strong>(comes twice), <strong>a fingerprint lock</strong> so no need to carry keys and a PS5 coming soon (diwali bonus plss). There's also an extra store room to keep all the extra stuff. And a guest washroom.</p>
+          <p>3 BHK, 14th Floor, Spacious max, <strong>Sunlit AF</strong>, great view, big tv (movie nightss!!!),<br><br>Plus we have an amazing <strong>cook </strong>(meals 3 times a day), a <strong>cleaning maid </strong>(comes twice), warm lighting (we're lamp paglus) and <strong>a fingerprint lock</strong> so no need to carry keys. There's also an extra store room to keep all the extra stuff. And a guest washroom.<br><br>P.S. We're a super non vegetarian household, it's mostly eggs and chicken every(other)day. Sorry PETA :(</p>
         </section>
 
         <section class="story-block">
@@ -545,13 +558,9 @@ body.lightbox-open{overflow:hidden}
 
 <script>
 (function(){
-  var btn = document.getElementById('copyBtn');
-  var label = document.getElementById('copyLabel');
-  var numberNode = document.getElementById('phoneNumber');
-  var number = '9818432194';
-  var timer;
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-copy-number]'));
 
-  function fallbackCopy(){
+  function fallbackCopy(numberNode){
     var range = document.createRange();
     range.selectNodeContents(numberNode);
     var selection = window.getSelection();
@@ -564,26 +573,31 @@ body.lightbox-open{overflow:hidden}
     }
   }
 
-  function showCopied(text){
-    clearTimeout(timer);
+  function showCopied(btn,text){
+    var label = btn.querySelector('.copy-label');
+    clearTimeout(btn.copyTimer);
     btn.classList.add('done');
     label.textContent = text;
-    timer = setTimeout(function(){
+    btn.copyTimer = setTimeout(function(){
       btn.classList.remove('done');
       label.textContent = 'Copy';
     },1800);
   }
 
-  btn.addEventListener('click',function(){
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(number).then(function(){
-        showCopied('Copied');
-      },function(){
-        showCopied(fallbackCopy() ? 'Copied' : 'Select');
-      });
-      return;
-    }
-    showCopied(fallbackCopy() ? 'Copied' : 'Select');
+  buttons.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var number = btn.dataset.copyNumber;
+      var numberNode = btn.parentElement.querySelector('.phone-number');
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(number).then(function(){
+          showCopied(btn,'Copied');
+        },function(){
+          showCopied(btn,fallbackCopy(numberNode) ? 'Copied' : 'Select');
+        });
+        return;
+      }
+      showCopied(btn,fallbackCopy(numberNode) ? 'Copied' : 'Select');
+    });
   });
 })();
 
@@ -667,3 +681,4 @@ body.lightbox-open{overflow:hidden}
 </script>
 </body>
 </html>
+
