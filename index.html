@@ -560,16 +560,20 @@ body.lightbox-open{overflow:hidden}
 (function(){
   var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-copy-number]'));
 
-  function fallbackCopy(numberNode){
-    var range = document.createRange();
-    range.selectNodeContents(numberNode);
-    var selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+  function fallbackCopy(number){
+    var field = document.createElement('textarea');
+    field.value = number;
+    field.setAttribute('readonly','');
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.select();
     try{
       return document.execCommand('copy');
     }catch(error){
       return false;
+    }finally{
+      field.remove();
     }
   }
 
@@ -587,16 +591,15 @@ body.lightbox-open{overflow:hidden}
   buttons.forEach(function(btn){
     btn.addEventListener('click',function(){
       var number = btn.dataset.copyNumber;
-      var numberNode = btn.parentElement.querySelector('.phone-number');
       if(navigator.clipboard && navigator.clipboard.writeText){
         navigator.clipboard.writeText(number).then(function(){
           showCopied(btn,'Copied');
         },function(){
-          showCopied(btn,fallbackCopy(numberNode) ? 'Copied' : 'Select');
+          showCopied(btn,fallbackCopy(number) ? 'Copied' : 'Select');
         });
         return;
       }
-      showCopied(btn,fallbackCopy(numberNode) ? 'Copied' : 'Select');
+      showCopied(btn,fallbackCopy(number) ? 'Copied' : 'Select');
     });
   });
 })();
